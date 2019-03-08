@@ -1,8 +1,14 @@
 use smf::my_fmri;
 
 fn main() {
-    match my_fmri() {
-        Some(fmri) => println!("FMRI: {}", fmri),
-        None => println!("Nada"),
-    }
+    ::std::process::exit(match my_fmri() {
+        Err(e) => {
+            eprintln!("No FMRI found: {}", e);
+            1
+        },
+        Ok(fmri) => {
+            println!("{}", fmri);
+            0
+        }
+    });
 }
