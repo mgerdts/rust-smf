@@ -1,0 +1,11 @@
+[package]
+name = "smf"
+version = "0.1.0"
+authors = ["Mike Gerdts <mike.gerdts@joyent.com>"]
+edition = "2018"
+
+[dependencies]
+libc = "0.2"
+
+[build-dependencies]
+bindgen = "0.48"
