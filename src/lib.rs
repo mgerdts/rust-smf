@@ -2,9 +2,8 @@
 extern crate libc;
 use crate::ffi::*;
 use std::ffi::{CStr, CString, NulError};
-use std::error;
+use std::error::{self, Error};
 use std::fmt;
-use std::error::Error;
 
 type Result<T> = std::result::Result<T, SMFError>;
 
@@ -38,7 +37,7 @@ impl Error for SMFError {
         &self.smf_error
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&Error> {
         None
     }
 }
