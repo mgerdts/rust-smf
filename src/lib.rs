@@ -1,7 +1,7 @@
 #![allow(dead_code)]    // To hush ffi warnings, must be a better way
 extern crate libc;
 use crate::ffi::*;
-use std::ffi::{CStr, CString};
+use std::ffi::{CStr, CString, NulError};
 use std::error;
 use std::fmt;
 use std::error::Error;
@@ -40,6 +40,12 @@ impl Error for SMFError {
 
     fn cause(&self) -> Option<&error::Error> {
         None
+    }
+}
+
+impl From<NulError> for SMFError {
+    fn from(error: NulError) -> Self {
+        SMFError { smf_error: format!("invalid string: {}", error) }
     }
 }
 
@@ -99,8 +105,32 @@ pub fn my_fmri() -> Result<String> {
     unsafe {
         let need = scf_myname(hdl.handle, ptr, len);
         if need == -1 {
-            return Err(SMFError::new());
+            Err(SMFError::new())
+        } else {
+            Ok(CString::from_raw(ptr).into_string().unwrap())
         }
-        Ok(CString::from_raw(ptr).into_string().unwrap())
+    }
+}
+
+/// Returns the state of the serivce as one of `uninitialized`, `maintenance`,
+/// `offline`, `disabled`, `online`, or `degraded`.
+///
+/// # Example
+///
+/// ```
+/// use smf::get_state;
+///
+/// let fmri = "svc:/system/filesystem/local:default";
+/// match get_state(&fmri) {
+///    Ok(state) => println!("{} is {}", fmri, state),
+///    Err(e) => eprintln!("{} has no state: {}", e),
+/// }
+/// ```
+pub fn get_state(fmri: &str) -> Result<String> {
+    let state = unsafe { smf_get_state(CString::new(fmri)?.as_ptr()) };
+    if state.is_null() {
+        Err(SMFError::new())
+    } else {
+        Ok(unsafe { CStr::from_ptr(state) }.to_string_lossy().to_string())
     }
 }

@@ -1,4 +1,4 @@
-use smf::my_fmri;
+use smf::{my_fmri, get_state};
 
 fn main() {
     ::std::process::exit(match my_fmri() {
@@ -7,7 +7,7 @@ fn main() {
             1
         },
         Ok(fmri) => {
-            println!("{}", fmri);
+            println!("{} is {}", fmri, get_state(&fmri).unwrap());
             0
         }
     });
