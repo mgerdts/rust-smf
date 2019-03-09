@@ -77,6 +77,19 @@ impl Drop for SCFHandle {
     }
 }
 
+/// Returns the FMRI of the service under which the calling process is running
+/// or an SMFError if not running under a service.
+///
+/// # Example
+///
+/// ```
+/// use smf::my_fmri;
+///
+/// match my_fmri() {
+///     Ok(fmri) => println!("My SMF instance is {}", fmri),
+///     Err(_) => println!("Not assocaited with a service"),
+/// }
+/// ```
 pub fn my_fmri() -> Result<String> {
     let len = unsafe { scf_limit(SCF_LIMIT_MAX_FMRI_LENGTH as u32) as usize };
     let ptr = CString::new(" ".repeat(len)).unwrap().into_raw();
@@ -89,15 +102,5 @@ pub fn my_fmri() -> Result<String> {
             return Err(SMFError::new());
         }
         Ok(CString::from_raw(ptr).into_string().unwrap())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        assert(1 == 1);
     }
 }
