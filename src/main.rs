@@ -3,7 +3,7 @@ use smf::{my_fmri, get_state};
 fn main() {
     ::std::process::exit(match my_fmri() {
         Err(e) => {
-            eprintln!("No FMRI found: {}", e);
+            eprintln!("{}", e);
             1
         },
         Ok(fmri) => {

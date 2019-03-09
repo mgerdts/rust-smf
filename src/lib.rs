@@ -93,7 +93,7 @@ impl Drop for SCFHandle {
 ///
 /// match my_fmri() {
 ///     Ok(fmri) => println!("My SMF instance is {}", fmri),
-///     Err(_) => println!("Not assocaited with a service"),
+///     Err(e) => eprintln!("{}", e),
 /// }
 /// ```
 pub fn my_fmri() -> Result<String> {
@@ -105,7 +105,9 @@ pub fn my_fmri() -> Result<String> {
     unsafe {
         let need = scf_myname(hdl.handle, ptr, len);
         if need == -1 {
-            Err(SMFError::new())
+            Err(SMFError {
+                smf_error: "process not associated with a service".to_string()
+            })
         } else {
             Ok(CString::from_raw(ptr).into_string().unwrap())
         }
