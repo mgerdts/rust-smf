@@ -1,6 +1,12 @@
-use smf::{get_state, my_fmri, PropGetOne, PropertyValue};
+use smf::{get_state, my_fmri, PropGetOne, PropertyValue, BoolProp};
 
 fn main() {
+    let bp = BoolProp{ inner: true };
+
+    println!("get_value: {:?}", bp.get_value());
+    println!("to_string: {:?}", bp.to_string());
+
+
     ::std::process::exit(match my_fmri() {
         Err(e) => {
             eprintln!("{}", e);

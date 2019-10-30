@@ -164,8 +164,23 @@ pub fn get_state(fmri: &str) -> Result<String> {
 //  net_address_v4
 //  net_address_v6
 
+pub trait Property {
+    fn get_value<T>(&self) -> T;
+
+    fn to_string(&self) {
+        return self.get_value().to_string();
+    }
+}
+
 pub struct BoolProp {
-    inner: bool,
+    // XXX remove pub
+    pub inner: bool,
+}
+
+impl Property for BoolProp {
+    fn get_value<bool>(&self) -> bool {
+        return self.inner;
+    }
 }
 
 pub struct CountProp {
